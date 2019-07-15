@@ -27,6 +27,11 @@ namespace PingDong.EventBus
 
         public void AddSubscriber(Type eventType, Type eventHandler)
         {
+            if (eventType == null)
+                throw new ArgumentNullException(nameof(eventType));
+            if (eventHandler == null)
+                throw new ArgumentNullException(nameof(eventHandler));
+
             var eventName = eventType.Name;
 
             _events.Add(eventName, eventType);
@@ -48,6 +53,9 @@ namespace PingDong.EventBus
         public void AddSubscriber<THandler>(string eventName)
             where THandler : IDynamicIntegrationEventHandler
         {
+            if (string.IsNullOrWhiteSpace(eventName))
+                throw new ArgumentNullException(nameof(eventName));
+
             AddSubscriber(typeof(THandler), eventName, isDynamic: true);
         }
 
@@ -64,8 +72,12 @@ namespace PingDong.EventBus
         public void RemoveSubscriber<THandler>(string eventName)
             where THandler : IDynamicIntegrationEventHandler
         {
+            if (string.IsNullOrWhiteSpace(eventName))
+                throw new ArgumentNullException(nameof(eventName));
+
             var handlerToRemove = FindSubscriberToRemove<THandler>(eventName);
-            RemoveSubscriber(eventName, handlerToRemove);
+            if (handlerToRemove != null)
+                RemoveSubscriber(eventName, handlerToRemove);
         }
 
         public IList<Subscriber> GetSubscribers<T>() where T : IntegrationEvent
@@ -77,6 +89,9 @@ namespace PingDong.EventBus
 
         public IList<Subscriber> GetSubscribers(string eventName)
         {
+            if (string.IsNullOrWhiteSpace(eventName))
+                throw new ArgumentNullException(nameof(eventName));
+
             return _handlers[eventName];
         }
 
@@ -94,9 +109,19 @@ namespace PingDong.EventBus
 
         public Type GetEventType(string eventName)
         {
+            if (string.IsNullOrWhiteSpace(eventName))
+                return null;
+
             return !_events.ContainsKey(eventName) ? null : _events[eventName];
         }
 
+        public Type GetEventType<T>() where T : IntegrationEvent
+        {
+            var eventName = GetEventName<T>();
+
+            return !_events.ContainsKey(eventName) ? null : _events[eventName];
+        }
+        
         public void Clear()
         {
             _handlers.Clear();

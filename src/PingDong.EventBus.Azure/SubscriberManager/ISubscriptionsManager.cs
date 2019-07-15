@@ -6,6 +6,7 @@ namespace PingDong.EventBus
     public interface ISubscriptionsManager
     {
         Type GetEventType(string eventName);
+        Type GetEventType<T>() where T : IntegrationEvent;
         
         bool HasSubscribers<T>() where T : IntegrationEvent;
         bool HasSubscribers(string eventName);
