@@ -1,0 +1,56 @@
+# ASP.NET Core
+# Build and test ASP.NET Core projects targeting .NET Core.
+# Add steps that run tests, create a NuGet package, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+
+trigger:
+  - develop
+  - master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+workspace:
+    clean: all
+
+variables:
+  buildConfiguration: 'Debug'
+  BuildConfiguration.Release: 'Release'
+
+steps:
+- script: dotnet restore
+  displayName: 'Restore'
+
+- task: DotNetCoreCLI@2
+  displayName: Build
+  inputs:
+    command: build
+    projects: '**/*.csproj'
+    arguments: '--configuration $(buildConfiguration)'
+
+- task: DotNetCoreCLI@2
+  displayName: Test
+  inputs:
+    command: test
+    projects: '**/*Tests/*.csproj'
+    arguments: '--configuration $(buildConfiguration) --collect "Code coverage"'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Release Build'
+  inputs:
+    projects: '**/*.csproj'
+    arguments: '--configuration $(BuildConfiguration.Release) --output $(Build.ArtifactStagingDirectory)'
+  condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
+
+- task: DotNetCoreCLI@2
+  displayName: Publish
+  inputs:
+    command: publish
+    publishWebProjects: false
+    projects: '**/*.csproj'
+    arguments: '--configuration $(BuildConfiguration.Release) --output $(Build.ArtifactStagingDirectory)'
+  condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact'
+  condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')

@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28922.388
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{B63ABBF4-3BF8-48A9-8C85-EE3B0D338BAA}") = "PingDong.EventBus.Azure", "src\PingDong.EventBus.Azure\PingDong.EventBus.Azure.csproj", "{AA5EC811-2A5D-4735-BB2C-54CE32C696B3}"
+EndProject
+Project("{FBDD4AE8-37CB-40D9-B5A0-46EAA3103B01}") = "PingDong.EventBus.Azure.UnitTests", "src\PingDong.EventBus.Azure.UnitTests\PingDong.EventBus.Azure.UnitTests.csproj", "{0B55988C-0935-450E-AA25-03F93DA0CA60}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AA5EC811-2A5D-4735-BB2C-54CE32C696B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA5EC811-2A5D-4735-BB2C-54CE32C696B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA5EC811-2A5D-4735-BB2C-54CE32C696B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA5EC811-2A5D-4735-BB2C-54CE32C696B3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0B55988C-0935-450E-AA25-03F93DA0CA60}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B55988C-0935-450E-AA25-03F93DA0CA60}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B55988C-0935-450E-AA25-03F93DA0CA60}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B55988C-0935-450E-AA25-03F93DA0CA60}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {AD913934-474C-4CF2-BA6F-11044FEED754}
+	EndGlobalSection
+EndGlobal
