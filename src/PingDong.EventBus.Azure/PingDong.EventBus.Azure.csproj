@@ -46,10 +46,7 @@
     <PackageReference Include="Microsoft.Azure.ServiceBus" Version="3.4.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.2.0" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\Core\src\PingDong.EventBus.Core\PingDong.EventBus.Core.csproj" />
+    <PackageReference Include="PingDong.EventBus.Core" Version="0.0.1" />
   </ItemGroup>
 
   <ItemGroup>
