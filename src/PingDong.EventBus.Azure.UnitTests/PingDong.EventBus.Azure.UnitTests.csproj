@@ -17,4 +17,8 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\PingDong.EventBus.Azure\PingDong.EventBus.Azure.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Azure.ServiceBus;
@@ -27,9 +28,9 @@ namespace PingDong.EventBus.Azure
 
         public async Task DispatchAsync(Message message)
         {
-            // TODO: Idempotent Check
-            // A message can only be processed once
-            
+            if (message == null)
+                return;
+
             // Extract the input message.body and convert to type
             var eventName = $"{message.Label}{_integrationEventSuffix}";
             var eventType = _subscriptions.GetEventType(eventName);
@@ -43,6 +44,9 @@ namespace PingDong.EventBus.Azure
             var integrationEvent = JsonConvert.DeserializeObject(data, eventType);
             
             var subscribers = _subscriptions.GetSubscribers(eventName);
+            if (!subscribers.Any())
+                return;
+
             foreach (var subscriber in subscribers)
             {
                 // Find handler for the message type
@@ -51,8 +55,7 @@ namespace PingDong.EventBus.Azure
                 {
                     var concreteType = typeof(IIntegrationEventHandler<>).MakeGenericType(eventType);
                     // Process handler
-                    await (Task) concreteType.GetMethod("Handle")
-                        .Invoke(handler, new object[] {integrationEvent});
+                    await (Task)concreteType.GetMethod("Handle").Invoke(handler, new [] { integrationEvent });
                 }
             }
         }
