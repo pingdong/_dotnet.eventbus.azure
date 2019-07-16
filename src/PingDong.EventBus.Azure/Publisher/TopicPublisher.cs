@@ -36,6 +36,7 @@ namespace PingDong.EventBus.Azure
             var message = new Message
             {
                 MessageId = Guid.NewGuid().ToString(),
+                CorrelationId = @event.CorrelationId,
                 Label = eventName,
                 Body = body,
             };

@@ -43,17 +43,11 @@ namespace PingDong.EventBus.Azure
             var integrationEvent = JsonConvert.DeserializeObject(data, eventType);
             if (integrationEvent is IntegrationEvent @event)
             {
-                if (!string.IsNullOrWhiteSpace(message.MessageId) &&
-                    Guid.TryParse(message.MessageId, out Guid messageId))
-                {
-                    @event.RequestId = messageId;
-                }
+                if (!string.IsNullOrWhiteSpace(message.MessageId))
+                    @event.RequestId = message.MessageId;
 
-                if (!string.IsNullOrWhiteSpace(message.CorrelationId) &&
-                    Guid.TryParse(message.CorrelationId, out Guid correlationId))
-                {
-                    @event.CorrelationId = correlationId;
-                }
+                if (!string.IsNullOrWhiteSpace(message.CorrelationId))
+                    @event.CorrelationId = message.CorrelationId;
             }
 
             var subscribers = _subscriptions.GetSubscribers(eventName);
