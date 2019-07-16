@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Azure.ServiceBus;
@@ -42,10 +41,22 @@ namespace PingDong.EventBus.Azure
                 return;
 
             var integrationEvent = JsonConvert.DeserializeObject(data, eventType);
-            
+            if (integrationEvent is IntegrationEvent @event)
+            {
+                if (!string.IsNullOrWhiteSpace(message.MessageId) &&
+                    Guid.TryParse(message.MessageId, out Guid messageId))
+                {
+                    @event.RequestId = messageId;
+                }
+
+                if (!string.IsNullOrWhiteSpace(message.CorrelationId) &&
+                    Guid.TryParse(message.CorrelationId, out Guid correlationId))
+                {
+                    @event.CorrelationId = correlationId;
+                }
+            }
+
             var subscribers = _subscriptions.GetSubscribers(eventName);
-            if (!subscribers.Any())
-                return;
 
             foreach (var subscriber in subscribers)
             {
