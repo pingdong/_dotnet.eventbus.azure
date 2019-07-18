@@ -5,6 +5,7 @@ using Microsoft.Azure.ServiceBus;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using PingDong.CleanArchitect.Core;
 using PingDong.EventBus.Core;
 
 namespace PingDong.EventBus.Azure
@@ -47,36 +48,21 @@ namespace PingDong.EventBus.Azure
             var integrationEvent = JsonConvert.DeserializeObject(data, eventType);
             if (integrationEvent is IntegrationEvent @event)
             {
-                if (!string.IsNullOrWhiteSpace(message.MessageId)
-                    && Guid.TryParse(message.MessageId, out Guid requestId))
-                {
-                    @event.RequestId = requestId;
-                }
-                else
+                if (string.IsNullOrWhiteSpace(message.MessageId))
                 {
                     _logger.LogError("Missing requestId or is invalid");
                     return;
                 }
 
-                if (!string.IsNullOrWhiteSpace(message.CorrelationId)
-                    && Guid.TryParse(message.CorrelationId, out Guid correlationId))
-                {
-                    @event.CorrelationId = correlationId;
-                }
-                else
-                {
-                    @event.CorrelationId = Guid.NewGuid();
-                }
-
-                if (!string.IsNullOrWhiteSpace(message.PartitionKey)
-                    && Guid.TryParse(message.PartitionKey, out Guid tenantId))
-                {
-                    @event.TenantId = tenantId;
-                }
-                else
+                if (!string.IsNullOrWhiteSpace(message.PartitionKey))
                 {
                     _logger.LogError("Missing tenantId or is invalid");
+                    return;
                 }
+                
+                @event.TenantId = message.PartitionKey;
+                @event.CorrelationId = message.CorrelationId;
+                @event.RequestId = message.MessageId;
             }
 
             var subscribers = _subscriptions.GetSubscribers(eventName);
