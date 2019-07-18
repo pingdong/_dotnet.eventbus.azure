@@ -2,8 +2,8 @@
 using System.Text;
 using Microsoft.Azure.ServiceBus;
 using Newtonsoft.Json;
+using PingDong.CleanArchitect.Core;
 using PingDong.EventBus.Azure.Json;
-using PingDong.EventBus.Core;
 
 namespace PingDong.EventBus.Azure
 {
