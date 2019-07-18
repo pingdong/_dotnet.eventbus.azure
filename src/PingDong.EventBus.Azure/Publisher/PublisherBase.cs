@@ -3,6 +3,7 @@ using System.Text;
 using Microsoft.Azure.ServiceBus;
 using Newtonsoft.Json;
 using PingDong.EventBus.Azure.Json;
+using PingDong.EventBus.Core;
 
 namespace PingDong.EventBus.Azure
 {
@@ -26,13 +27,20 @@ namespace PingDong.EventBus.Azure
             var jsonMessage = JsonConvert.SerializeObject(@event, serializerSettings);
             var body = Encoding.UTF8.GetBytes(jsonMessage);
             
-            return new Message
+            var message = new Message
             {
                 MessageId = Guid.NewGuid().ToString(),
-                CorrelationId = @event.CorrelationId,
+                ContentType = "application/json",
                 Label = eventName,
-                Body = body,
+                Body = body
             };
+
+            if (@event.CorrelationId != default)
+                message.CorrelationId = @event.CorrelationId.ToString();
+            if (@event.TenantId != default)
+                message.PartitionKey = @event.TenantId.ToString();
+
+            return message;
         }
     }
 

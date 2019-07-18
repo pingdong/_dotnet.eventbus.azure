@@ -52,17 +52,12 @@ namespace PingDong.EventBus.Azure.Json
 
         private bool IsIgnored(Type type, string jsonPropertyName)
         {
-            if (!_ignores.ContainsKey(type))
-                return false;
-
-            return _ignores[type].Contains(jsonPropertyName);
+            return _ignores.ContainsKey(type) && _ignores[type].Contains(jsonPropertyName);
         }
 
         private bool IsRenamed(Type type, string jsonPropertyName, out string newJsonPropertyName)
         {
-            Dictionary<string, string> renames;
-
-            if (!_renames.TryGetValue(type, out renames) ||
+            if (!_renames.TryGetValue(type, out var renames) ||
                 !renames.TryGetValue(jsonPropertyName, out newJsonPropertyName))
             {
                 newJsonPropertyName = null;
