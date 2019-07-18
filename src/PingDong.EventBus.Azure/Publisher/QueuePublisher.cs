@@ -1,6 +1,7 @@
 ﻿using Microsoft.Azure.ServiceBus;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
+using PingDong.EventBus.Core;
 
 namespace PingDong.EventBus.Azure
 {
