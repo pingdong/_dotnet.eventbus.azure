@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Azure.ServiceBus;
@@ -34,49 +35,79 @@ namespace PingDong.EventBus.Azure
         {
             if (message == null)
                 return;
-
-            // Extract the input message.body and convert to type
-            var eventName = $"{message.Label}{_integrationEventSuffix}";
-            var eventType = _subscriptions.GetEventType(eventName);
-            if (eventType == null)
-                return;
-
-            var data = Encoding.UTF8.GetString(message.Body);
-            if (string.IsNullOrWhiteSpace(data))
-                return;
-
-            var integrationEvent = JsonConvert.DeserializeObject(data, eventType);
-            if (integrationEvent is IntegrationEvent @event)
+            
+            var subscribers = _subscriptions.GetSubscribers(message.Label);
+            if (subscribers != null && subscribers.Any())
             {
-                if (string.IsNullOrWhiteSpace(message.MessageId))
-                {
-                    _logger.LogError("Missing requestId or is invalid");
-                    return;
-                }
-
-                if (!string.IsNullOrWhiteSpace(message.PartitionKey))
-                {
-                    _logger.LogError("Missing tenantId or is invalid");
-                    return;
-                }
+                // Dynamic Type
                 
-                @event.TenantId = message.PartitionKey;
-                @event.CorrelationId = message.CorrelationId;
-                @event.RequestId = message.MessageId;
+                var data = Encoding.UTF8.GetString(message.Body);
+                if (string.IsNullOrWhiteSpace(data))
+                    return;
+
+                dynamic integrationEvent = JsonConvert.DeserializeObject(data);
+                
+                foreach (var subscriber in subscribers)
+                {
+                    // Find handler for the message type
+                    var handler = ActivatorUtilities.GetServiceOrCreateInstance(_services, subscriber.HandlerType);
+                    if (handler == null)
+                        continue;
+
+                    if (handler is IDynamicIntegrationEventHandler dynamicHandler)
+                    {
+                        // Process handler
+                        await dynamicHandler.Handle(integrationEvent);
+                    }
+                }
             }
-
-            var subscribers = _subscriptions.GetSubscribers(eventName);
-
-            foreach (var subscriber in subscribers)
+            else
             {
-                // Find handler for the message type
-                var handler = ActivatorUtilities.GetServiceOrCreateInstance(_services, subscriber.HandlerType);
-                if (handler == null)
-                    continue;
+                // Fixed Type
 
-                var concreteType = typeof(IIntegrationEventHandler<>).MakeGenericType(eventType);
-                // Process handler
-                await (Task)concreteType.GetMethod("Handle").Invoke(handler, new [] { integrationEvent });
+                // Extract the input message.body and convert to type
+                var eventName = $"{message.Label}{_integrationEventSuffix}";
+                var eventType = _subscriptions.GetEventType(eventName);
+                if (eventType == null)
+                    return;
+
+                var data = Encoding.UTF8.GetString(message.Body);
+                if (string.IsNullOrWhiteSpace(data))
+                    return;
+
+                var integrationEvent = JsonConvert.DeserializeObject(data, eventType);
+                if (integrationEvent is IntegrationEvent @event)
+                {
+                    if (string.IsNullOrWhiteSpace(message.MessageId))
+                    {
+                        _logger.LogError("Missing requestId or is invalid");
+                        return;
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(message.PartitionKey))
+                    {
+                        _logger.LogError("Missing tenantId or is invalid");
+                        return;
+                    }
+
+                    @event.TenantId = message.PartitionKey;
+                    @event.CorrelationId = message.CorrelationId;
+                    @event.RequestId = message.MessageId;
+                }
+
+                var fixedTypeSubscribers = _subscriptions.GetSubscribers(eventName);
+
+                foreach (var subscriber in fixedTypeSubscribers)
+                {
+                    // Find handler for the message type
+                    var handler = ActivatorUtilities.GetServiceOrCreateInstance(_services, subscriber.HandlerType);
+                    if (handler == null)
+                        continue;
+                    
+                    var concreteType = typeof(IIntegrationEventHandler<>).MakeGenericType(eventType);
+                    // Process handler
+                    await (Task) concreteType.GetMethod("Handle").Invoke(handler, new[] {integrationEvent});
+                }
             }
         }
     }
