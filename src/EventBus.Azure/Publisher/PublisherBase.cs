@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using Microsoft.Azure.ServiceBus;
 using Newtonsoft.Json;
 using PingDong.CleanArchitect.Core;
@@ -12,11 +13,14 @@ namespace PingDong.EventBus.Azure
 
         protected Message ToMessage(IntegrationEvent @event)
         {
+            if (string.IsNullOrWhiteSpace(@event.RequestId))
+                @event.RequestId = Guid.NewGuid().ToString();
+
             var resolver = new PropertyRenameAndIgnoreSerializerContractResolver();
             resolver.IgnoreProperty(typeof(IntegrationEvent), "RequestId");
             resolver.IgnoreProperty(typeof(IntegrationEvent), "TenantId");
             resolver.IgnoreProperty(typeof(IntegrationEvent), "CorrelationId");
-            resolver.IgnoreProperty(typeof(IntegrationEvent), "CreationDate");
+            resolver.IgnoreProperty(typeof(IntegrationEvent), "CreationDateInUtc");
 
             var settings = new JsonSerializerSettings
             {
