@@ -47,7 +47,7 @@
     <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.2.0" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
-    <PackageReference Include="PingDong.EventBus.Core" Version="0.0.1.9" />
+    <PackageReference Include="PingDong.EventBus.Core" Version="0.0.1.10" />
     <PackageReference Include="PingDong.Shared" Version="0.0.1.4" />
   </ItemGroup>
 
