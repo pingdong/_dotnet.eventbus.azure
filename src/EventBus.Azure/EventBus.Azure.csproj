@@ -15,15 +15,15 @@
 
   <!-- Assembly -->
   <PropertyGroup>
-    <AssemblyVersion>0.0.1.13</AssemblyVersion>
-    <FileVersion>0.0.1.13</FileVersion>
+    <AssemblyVersion>0.0.1.14</AssemblyVersion>
+    <FileVersion>0.0.1.14</FileVersion>
   </PropertyGroup>
 
   <!-- Package -->
   <PropertyGroup>
     <PackageId>PingDong.EventBus.Azure</PackageId>
     <Description></Description>
-    <Version>0.0.1.13</Version>
+    <Version>0.0.1.14</Version>
     <Authors>Ping Dong</Authors>
     <Copyright>Copyright (c) 2019 Ping Dong</Copyright>
     <RepositoryUrl>https://github.com/pingdong/dotnet.eventbus.azure</RepositoryUrl>
@@ -48,7 +48,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.2.0" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="PingDong.EventBus.Core" Version="0.0.1.11" />
-    <PackageReference Include="PingDong.Shared" Version="0.0.1.4" />
+    <PackageReference Include="PingDong.Shared" Version="0.0.1.5" />
   </ItemGroup>
 
 </Project>
